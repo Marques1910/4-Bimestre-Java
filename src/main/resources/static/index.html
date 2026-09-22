@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Filmes</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>🎬 Cadastro de Filmes</h1>
+
+<!-- ========================= -->
+<!-- CADASTRAR FILME -->
+<!-- ========================= -->
+
+<h2>Cadastrar Filme</h2>
+
+<input
+        type="text"
+        id="titulo"
+        placeholder="Título do filme"
+>
+
+<input
+        type="text"
+        id="diretor"
+        placeholder="Diretor"
+>
+
+<input
+        type="text"
+        id="genero"
+        placeholder="Gênero"
+>
+
+<input
+        type="number"
+        id="anoLancamento"
+        placeholder="Ano de lançamento"
+>
+
+<button onclick="criar()">
+    Salvar
+</button>
+
+
+<hr>
+
+
+<!-- ========================= -->
+<!-- BUSCAR FILME -->
+<!-- ========================= -->
+
+<h2>Buscar Filme</h2>
+
+<input
+        type="number"
+        id="buscarId"
+        placeholder="ID do filme"
+>
+
+<button onclick="buscar()">
+    Buscar
+</button>
+
+<pre id="resultadoBuscar"></pre>
+
+
+<hr>
+
+
+<!-- ========================= -->
+<!-- DELETAR FILME -->
+<!-- ========================= -->
+
+<h2>Deletar Filme</h2>
+
+<input
+        type="number"
+        id="deletarId"
+        placeholder="ID do filme"
+>
+
+<button onclick="deletar()">
+    Deletar
+</button>
+
+
+<hr>
+
+
+<!-- ========================= -->
+<!-- ATUALIZAR FILME -->
+<!-- ========================= -->
+
+<h2>Atualizar Filme</h2>
+
+<input
+        type="number"
+        id="id"
+        placeholder="ID do filme"
+>
+
+<input
+        type="text"
+        id="novoTitulo"
+        placeholder="Novo título"
+>
+
+<input
+        type="text"
+        id="novoDiretor"
+        placeholder="Novo diretor"
+>
+
+<input
+        type="text"
+        id="novoGenero"
+        placeholder="Novo gênero"
+>
+
+<input
+        type="number"
+        id="novoAnoLancamento"
+        placeholder="Novo ano de lançamento"
+>
+
+<button onclick="atualizar()">
+    Atualizar
+</button>
+
+
+<script>
+
+    const api = "/filmes";
+
+
+    // =========================
+    // CRIAR FILME
+    // =========================
+
+    async function criar() {
+
+        const titulo =
+            document.getElementById("titulo").value;
+
+        const diretor =
+            document.getElementById("diretor").value;
+
+        const genero =
+            document.getElementById("genero").value;
+
+        const anoLancamento =
+            document.getElementById("anoLancamento").value;
+
+
+        if (titulo === "" || diretor === "") {
+
+            alert("Preencha o título e o diretor!");
+
+            return;
+        }
+
+
+        const resp = await fetch(api, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+
+                titulo: titulo,
+
+                diretor: diretor,
+
+                genero: genero,
+
+                anoLancamento:
+                    anoLancamento
+                        ? Number(anoLancamento)
+                        : null
+
+            })
+
+        });
+
+
+        if (resp.ok) {
+
+            alert("Filme cadastrado com sucesso!");
+
+            limparCadastro();
+
+        } else {
+
+            alert("Erro ao cadastrar filme!");
+
+        }
+
+    }
+
+
+    // =========================
+    // BUSCAR FILME
+    // =========================
+
+    async function buscar() {
+
+        const id =
+            document.getElementById("buscarId").value;
+
+
+        if (id === "") {
+
+            alert("Digite o ID do filme!");
+
+            return;
+        }
+
+
+        const resp =
+            await fetch(`${api}/${id}`);
+
+
+        if (resp.ok) {
+
+            const filme =
+                await resp.json();
+
+
+            document.getElementById(
+                "resultadoBuscar"
+            ).innerText =
+
+                "ID: " + filme.id + "\n" +
+
+                "Título: " + filme.titulo + "\n" +
+
+                "Diretor: " + filme.diretor + "\n" +
+
+                "Gênero: " + filme.genero + "\n" +
+
+                "Ano: " + filme.anoLancamento;
+
+        } else {
+
+            document.getElementById(
+                "resultadoBuscar"
+            ).innerText =
+                "Filme não encontrado!";
+
+        }
+
+    }
+
+
+    // =========================
+    // DELETAR FILME
+    // =========================
+
+    async function deletar() {
+
+        const id =
+            document.getElementById(
+                "deletarId"
+            ).value;
+
+
+        if (id === "") {
+
+            alert("Digite o ID do filme!");
+
+            return;
+
+        }
+
+
+        const confirmar =
+            confirm(
+                "Deseja realmente excluir este filme?"
+            );
+
+
+        if (!confirmar) {
+
+            return;
+
+        }
+
+
+        const resp =
+            await fetch(
+                `${api}/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        if (resp.ok) {
+
+            alert(
+                "Filme deletado com sucesso!"
+            );
+
+            document.getElementById(
+                "deletarId"
+            ).value = "";
+
+        } else {
+
+            alert(
+                "Erro ao deletar filme!"
+            );
+
+        }
+
+    }
+
+
+    // =========================
+    // ATUALIZAR FILME
+    // =========================
+
+    async function atualizar() {
+
+        const id =
+            document.getElementById(
+                "id"
+            ).value;
+
+
+        const titulo =
+            document.getElementById(
+                "novoTitulo"
+            ).value;
+
+
+        const diretor =
+            document.getElementById(
+                "novoDiretor"
+            ).value;
+
+
+        const genero =
+            document.getElementById(
+                "novoGenero"
+            ).value;
+
+
+        const anoLancamento =
+            document.getElementById(
+                "novoAnoLancamento"
+            ).value;
+
+
+        if (id === "") {
+
+            alert(
+                "Digite o ID do filme!"
+            );
+
+            return;
+
+        }
+
+
+        const resp =
+            await fetch(
+                `${api}/${id}`,
+                {
+
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        titulo: titulo,
+
+                        diretor: diretor,
+
+                        genero: genero,
+
+                        anoLancamento:
+                            anoLancamento
+                                ? Number(
+                                    anoLancamento
+                                )
+                                : null
+
+                    })
+
+                }
+            );
+
+
+        if (resp.ok) {
+
+            alert(
+                "Filme atualizado com sucesso!"
+            );
+
+            limparAtualizacao();
+
+        } else {
+
+            alert(
+                "Erro ao atualizar filme!"
+            );
+
+        }
+
+    }
+
+
+    // =========================
+    // LIMPAR CAMPOS
+    // =========================
+
+    function limparCadastro() {
+
+        document.getElementById(
+            "titulo"
+        ).value = "";
+
+        document.getElementById(
+            "diretor"
+        ).value = "";
+
+        document.getElementById(
+            "genero"
+        ).value = "";
+
+        document.getElementById(
+            "anoLancamento"
+        ).value = "";
+
+    }
+
+
+    function limparAtualizacao() {
+
+        document.getElementById(
+            "id"
+        ).value = "";
+
+        document.getElementById(
+            "novoTitulo"
+        ).value = "";
+
+        document.getElementById(
+            "novoDiretor"
+        ).value = "";
+
+        document.getElementById(
+            "novoGenero"
+        ).value = "";
+
+        document.getElementById(
+            "novoAnoLancamento"
+        ).value = "";
+
+    }
+
+</script>
+
+</body>
+
+</html>
