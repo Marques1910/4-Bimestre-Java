@@ -1,40 +1,83 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
+    max-width: 800px;
+    margin: auto;
+    padding: 30px 20px;
+
     font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f4f6f8;
-    color: #333;
+
+    background-color: #f4f4f4;
+    color: #222;
 }
 
 h1 {
-    color: #2c3e50;
     text-align: center;
+    margin-bottom: 30px;
 }
 
 h2 {
-    margin-top: 20px;
-    color: #34495e;
+    margin-top: 25px;
+    color: #333;
 }
 
-input, button {
-    margin: 5px 0;
-    padding: 8px;
-    font-size: 14px;
-    border-radius: 5px;
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 7px 0;
+
     border: 1px solid #ccc;
+    border-radius: 5px;
+
+    font-size: 14px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #3b82f6;
 }
 
 button {
-    background-color: #3498db;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+
+    background-color: #3b82f6;
     color: white;
+
     border: none;
+    border-radius: 5px;
+
     cursor: pointer;
-    transition: 0.3s;
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #2563eb;
 }
 
 hr {
-    margin: 20px 0;
+    margin: 30px 0;
+
+    border: none;
+    border-top: 1px solid #ddd;
+}
+
+#resultadoBuscar {
+    margin-top: 10px;
+    padding: 12px;
+
+    background-color: white;
+
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#resultadoBuscar p {
+    margin: 5px 0;
+}
+
+#resultadoBuscar strong {
+    color: #2563eb;
 }

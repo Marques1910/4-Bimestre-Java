@@ -1,6 +1,6 @@
 package com.filmes.cadastro_filmes.controller;
 
-import com.filmes.cadastro_filmes.bussiness.FilmeService;
+import com.filmes.cadastro_filmes.business.FilmeService;
 import com.filmes.cadastro_filmes.infrastructure.entitys.Filme;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.filmes.cadastro_filmes.bussiness;
+package com.filmes.cadastro_filmes.business;
 
 import com.filmes.cadastro_filmes.infrastructure.entitys.Filme;
 import com.filmes.cadastro_filmes.infrastructure.repository.FilmeRepository;
