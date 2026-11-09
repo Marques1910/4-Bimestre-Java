@@ -31,4 +31,10 @@ public class Filme {
 
     @Column(name = "ano_lancamento")
     private Integer anoLancamento;
+
+    @Column(name = "capa_url", length = 500)
+    private String capaUrl;
+
+    @Column(name = "sinopse", columnDefinition = "TEXT")
+    private String sinopse;
 }

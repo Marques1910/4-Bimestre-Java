@@ -1,6 +1,8 @@
 package com.filmes.cadastro_filmes.controller;
 
 import com.filmes.cadastro_filmes.business.FilmeService;
+import com.filmes.cadastro_filmes.business.PesquisaFilmeService;
+import com.filmes.cadastro_filmes.business.SugestaoFilme;
 import com.filmes.cadastro_filmes.infrastructure.entitys.Filme;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +15,21 @@ import java.util.List;
 public class FilmeController {
 
     private final FilmeService filmeService;
+    private final PesquisaFilmeService pesquisaFilmeService;
 
-    public FilmeController(FilmeService filmeService) {
+    public FilmeController(FilmeService filmeService, PesquisaFilmeService pesquisaFilmeService) {
         this.filmeService = filmeService;
+        this.pesquisaFilmeService = pesquisaFilmeService;
+    }
+
+    @GetMapping("/pesquisa")
+    public ResponseEntity<List<SugestaoFilme>> pesquisarFilmes(@RequestParam String termo) {
+        return ResponseEntity.ok(pesquisaFilmeService.pesquisar(termo));
+    }
+
+    @GetMapping("/pesquisa/{tmdbId}")
+    public ResponseEntity<Filme> detalharPesquisa(@PathVariable Long tmdbId) {
+        return ResponseEntity.ok(pesquisaFilmeService.detalhar(tmdbId));
     }
 
     @PostMapping

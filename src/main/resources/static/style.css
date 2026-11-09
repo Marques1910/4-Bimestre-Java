@@ -1,20 +1,19 @@
-/* Paleta de cartaz de cinema: petróleo na estrutura, mostarda na ação principal,
-   coral no que é destrutivo. */
+/* Sala escura em petróleo: a cor vem das capas, a mostarda marca a ação principal
+   e a capa do filme abre como um estojo. */
 
 :root {
+    --noite: #06222b;
     --petroleo: #0b3c49;
     --petroleo-claro: #12566a;
     --mostarda: #f5b83d;
     --coral: #d03e27;
+    --coral-claro: #ff8a75;
     --verde: #0f6b5c;
-    --fundo-pagina: #e6f0ee;
-    --superficie: #ffffff;
+    --texto: #eef6f4;
+    --apagado: #a9c4c4;
     --tinta: #13262b;
-    --apagado: #4d6369;
-    --linha: #c5d6d3;
-    --perigo: var(--coral);
 
-    /* Cores dos verbos, sobre o fundo petróleo do monitor */
+    /* Cores dos verbos no monitor */
     --verbo-get: #5fd3b3;
     --verbo-post: #f5b83d;
     --verbo-put: #8ab4ff;
@@ -25,6 +24,7 @@
 
     --raio: 8px;
     --calha: clamp(16px, 3vw, 40px);
+    --largura-folha: min(380px, 46vw, calc((100dvh - 48px) / 1.5));
 }
 
 * {
@@ -40,19 +40,13 @@ body {
     font-family: var(--fonte-interface);
     font-size: 1rem;
     line-height: 1.45;
-    color: var(--tinta);
-    background: var(--fundo-pagina);
+    color: var(--texto);
+    background: var(--noite);
 }
 
 :focus-visible {
-    outline: 2px solid var(--petroleo);
+    outline: 2px solid var(--mostarda);
     outline-offset: 2px;
-}
-
-.topo :focus-visible,
-.monitor :focus-visible,
-.formulario-topo :focus-visible {
-    outline-color: #ffffff;
 }
 
 
@@ -69,8 +63,7 @@ body {
 
     padding: 14px var(--calha);
 
-    color: #ffffff;
-    background: var(--petroleo);
+    background: var(--noite);
 }
 
 .marca {
@@ -101,14 +94,6 @@ h1 {
 
 .topo .botao {
     flex: none;
-    color: var(--tinta);
-    background: var(--mostarda);
-    border-color: var(--mostarda);
-}
-
-.topo .botao:hover {
-    background: #ffcb5e;
-    border-color: #ffcb5e;
 }
 
 
@@ -120,11 +105,15 @@ h1 {
     padding: 9px 12px;
 
     font: inherit;
-    color: var(--tinta);
+    color: var(--texto);
 
-    background: var(--superficie);
-    border: 1px solid var(--linha);
+    background: var(--petroleo);
+    border: 1px solid var(--petroleo-claro);
     border-radius: var(--raio);
+}
+
+textarea.campo {
+    resize: vertical;
 }
 
 .campo::placeholder {
@@ -133,7 +122,7 @@ h1 {
 }
 
 .campo:hover {
-    border-color: var(--petroleo);
+    border-color: var(--apagado);
 }
 
 .botao {
@@ -153,99 +142,86 @@ h1 {
 }
 
 .botao-principal {
-    color: var(--superficie);
-    background: var(--petroleo);
-    border: 1px solid var(--petroleo);
+    color: var(--tinta);
+    background: var(--mostarda);
+    border: 1px solid var(--mostarda);
 }
 
 .botao-principal:hover {
-    background: var(--petroleo-claro);
-    border-color: var(--petroleo-claro);
+    background: #ffcb5e;
+    border-color: #ffcb5e;
 }
 
 .botao-perigo {
-    color: var(--perigo);
+    color: var(--coral-claro);
     background: transparent;
     border: 1px solid transparent;
 }
 
 .botao-perigo:hover {
-    border-color: var(--perigo);
+    border-color: var(--coral-claro);
+}
+
+.botao-fechar {
+    width: 36px;
+    height: 36px;
+
+    font: inherit;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--texto);
+
+    background: transparent;
+    border: 0;
+    border-radius: var(--raio);
+    cursor: pointer;
+}
+
+.botao-fechar:hover {
+    background: var(--petroleo-claro);
 }
 
 
-/* Acervo */
+/* Capas */
 
-.conteudo {
-    max-width: 1440px;
-    margin: 0 auto;
-    /* Espaço para o último cartaz não ficar atrás do monitor */
-    padding: 32px var(--calha) 96px;
+.capa {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.acervo {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
-    gap: 24px 20px;
-
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.acervo:empty {
-    display: none;
-}
-
+/* Capa gerada para filme sem imagem */
 .cartaz {
     position: relative;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    container-type: inline-size;
 
     width: 100%;
-    aspect-ratio: 2 / 3;
-    padding: 14px;
+    height: 100%;
+    padding: 8%;
     overflow: hidden;
 
-    font: inherit;
-    font-size: 0.8125rem;
-    line-height: 1.35;
-    text-align: left;
-    color: var(--texto);
-
-    background: var(--fundo);
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.cartaz:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 14px 28px rgb(22 22 29 / 0.24);
-}
-
-.cartaz:focus-visible {
-    outline-offset: 3px;
+    color: var(--cartaz-texto);
+    background: var(--cartaz-fundo);
 }
 
 /* Combinações com texto legível sobre o fundo (mínimo 4.5:1) */
-.paleta-0 { --fundo: #c23a22; --figura: #f5b83d; --texto: #fff6e6; }
-.paleta-1 { --fundo: #123c69; --figura: #ee6c4d; --texto: #f7f3e9; }
-.paleta-2 { --fundo: #0f6b5c; --figura: #f2c14e; --texto: #f7f3e9; }
-.paleta-3 { --fundo: #4b2a7b; --figura: #f28fad; --texto: #fbf5ff; }
-.paleta-4 { --fundo: #20202e; --figura: #e8e3d3; --texto: #f5f1e6; }
-.paleta-5 { --fundo: #8a1c3d; --figura: #f4a259; --texto: #fff4ea; }
-.paleta-6 { --fundo: #f0b429; --figura: #1f2a44; --texto: #1b1b26; }
+.paleta-0 { --cartaz-fundo: #c23a22; --cartaz-figura: #f5b83d; --cartaz-texto: #fff6e6; }
+.paleta-1 { --cartaz-fundo: #123c69; --cartaz-figura: #ee6c4d; --cartaz-texto: #f7f3e9; }
+.paleta-2 { --cartaz-fundo: #0f6b5c; --cartaz-figura: #f2c14e; --cartaz-texto: #f7f3e9; }
+.paleta-3 { --cartaz-fundo: #4b2a7b; --cartaz-figura: #f28fad; --cartaz-texto: #fbf5ff; }
+.paleta-4 { --cartaz-fundo: #20202e; --cartaz-figura: #e8e3d3; --cartaz-texto: #f5f1e6; }
+.paleta-5 { --cartaz-fundo: #8a1c3d; --cartaz-figura: #f4a259; --cartaz-texto: #fff4ea; }
+.paleta-6 { --cartaz-fundo: #f0b429; --cartaz-figura: #1f2a44; --cartaz-texto: #1b1b26; }
 
 .cartaz-figura {
     position: absolute;
     inset: 0 0 auto;
-    /* Limite para um título de 3 linhas não invadir a figura */
-    height: 42%;
-    background: var(--figura);
+    height: 50%;
+    background: var(--cartaz-figura);
 }
 
 .figura-circulo {
@@ -257,48 +233,215 @@ h1 {
 }
 
 .figura-faixas {
-    background: repeating-linear-gradient(var(--figura) 0 11%, transparent 11% 22%);
+    background: repeating-linear-gradient(var(--cartaz-figura) 0 11%, transparent 11% 22%);
 }
 
 .cartaz-titulo {
+    position: relative;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     overflow: hidden;
-    position: relative;
-
-    margin-bottom: 6px;
 
     font-family: var(--fonte-cartaz);
-    font-size: 1.625rem;
+    font-size: 16cqi;
     font-weight: 800;
     line-height: 1;
     overflow-wrap: anywhere;
 }
 
-.cartaz-linha {
+
+/* Filme em destaque */
+
+.destaque {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+
+    min-height: clamp(340px, 54vh, 540px);
+    padding: 32px var(--calha) 56px;
     overflow: hidden;
+
+    background: var(--petroleo);
+}
+
+.destaque-fundo {
+    position: absolute;
+    inset: -60px;
+    width: calc(100% + 120px);
+    height: calc(100% + 120px);
+    object-fit: cover;
+    filter: blur(40px) saturate(1.3) brightness(0.5);
+}
+
+/* Faz o destaque se dissolver na página */
+.destaque::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 40%;
+    background: linear-gradient(transparent, var(--noite));
+}
+
+.destaque-texto,
+.destaque-capa {
+    position: relative;
+    z-index: 1;
+}
+
+.destaque-texto {
+    max-width: 62ch;
+}
+
+.destaque-texto h2 {
+    margin: 0 0 12px;
+
+    font-family: var(--fonte-cartaz);
+    font-size: clamp(3rem, 9vw, 7rem);
+    font-weight: 800;
+    line-height: 0.95;
+    overflow-wrap: anywhere;
+}
+
+.destaque-sinopse {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+
+    margin: 0 0 20px;
+}
+
+.destaque-sinopse:empty {
+    display: none;
+}
+
+.destaque-capa {
+    flex: none;
+    width: clamp(180px, 22vw, 280px);
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+
+    border-radius: 6px;
+    box-shadow: 0 24px 48px rgb(0 0 0 / 0.5);
+    transform: rotate(2.5deg);
+}
+
+.estojo-dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0 0 14px;
+    color: var(--apagado);
+}
+
+
+/* Prateleiras */
+
+.acervo {
+    padding: 8px 0 80px;
+}
+
+.acervo:empty {
+    display: none;
+}
+
+.prateleira {
+    margin-bottom: 28px;
+}
+
+.prateleira h2 {
+    margin: 0 var(--calha) 6px;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.fileira {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(132px, 15vw, 190px);
+    gap: 16px;
+
+    margin: 0;
+    /* Folga para o card ampliado no hover não ser cortado */
+    padding: 10px var(--calha) 14px;
+    overflow-x: auto;
+    list-style: none;
+
+    scroll-padding-inline: var(--calha);
+    scroll-snap-type: x proximity;
+    scrollbar-color: var(--petroleo-claro) transparent;
+    scrollbar-width: thin;
+}
+
+.fileira li {
+    scroll-snap-align: start;
+}
+
+.fileira-grade {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-auto-columns: auto;
+    overflow: visible;
+}
+
+.card {
+    display: block;
+    width: 100%;
+    padding: 0;
+
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: left;
+    color: var(--texto);
+
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.card-capa {
+    display: block;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+
+    background: var(--petroleo);
+    border-radius: 6px;
+
+    transition: transform 0.15s ease;
+}
+
+.card:hover .card-capa {
+    transform: scale(1.04);
+    outline: 2px solid var(--mostarda);
+}
+
+.card-titulo {
+    display: block;
+    margin-top: 8px;
+    overflow: hidden;
+
+    font-weight: 600;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-.cartaz-rodape {
-    position: relative;
+.card-legenda {
     display: flex;
     justify-content: space-between;
-    margin-top: 2px;
+    color: var(--apagado);
 }
-
-
-/* Acervo vazio, busca sem resultado e falha de conexão */
 
 .aviso {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 14px;
+
     max-width: 60ch;
+    padding: 32px var(--calha) 96px;
 }
 
 .aviso p {
@@ -308,7 +451,110 @@ h1 {
 }
 
 
-/* Painel lateral */
+/* Capa aberta: a folha gira na lombada e revela as informações */
+
+.estojo {
+    padding: 0;
+    overflow: visible;
+
+    color: var(--texto);
+    background: transparent;
+    border: 0;
+}
+
+.estojo::backdrop,
+.painel::backdrop {
+    background: rgb(6 34 43 / 0.82);
+}
+
+.estojo-corpo {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, var(--largura-folha));
+    perspective: 1800px;
+}
+
+.estojo-info {
+    grid-column: 2;
+    position: relative;
+    height: calc(var(--largura-folha) * 1.5);
+    padding: 24px;
+    overflow-y: auto;
+
+    background: var(--petroleo);
+    border-radius: 0 8px 8px 0;
+}
+
+.estojo-info h2 {
+    margin: 0 36px 10px 0;
+
+    font-family: var(--fonte-cartaz);
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.estojo-info .botao-fechar {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+}
+
+.estojo-diretor {
+    margin: 0 0 14px;
+    font-weight: 600;
+}
+
+.estojo-diretor:empty {
+    display: none;
+}
+
+.estojo-sinopse {
+    margin: 0 0 22px;
+    line-height: 1.55;
+}
+
+.folha {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+
+    width: 50%;
+    height: 100%;
+
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transform: rotateY(-180deg);
+}
+
+.estojo[open] .folha {
+    animation: abrir-capa 0.75s cubic-bezier(0.45, 0.05, 0.2, 1);
+}
+
+@keyframes abrir-capa {
+    from { transform: rotateY(0); }
+}
+
+.folha > * {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px 0 0 8px;
+    backface-visibility: hidden;
+}
+
+/* A frente fecha sobre as informações; o verso fica visível depois de aberta */
+.folha > :first-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.folha > :last-child {
+    transform: rotateY(180deg);
+}
+
+
+/* Painel de cadastro */
 
 .painel {
     width: min(440px, 100vw);
@@ -318,17 +564,13 @@ h1 {
     margin: 0 0 0 auto;
     padding: 0;
 
-    color: var(--tinta);
-    background: var(--superficie);
+    color: var(--texto);
+    background: var(--noite);
     border: 0;
 }
 
 .painel[open] {
     animation: painel-entra 0.2s ease-out;
-}
-
-.painel::backdrop {
-    background: rgb(11 60 73 / 0.6);
 }
 
 @keyframes painel-entra {
@@ -351,42 +593,22 @@ h1 {
 }
 
 .formulario-topo {
-    color: #ffffff;
     background: var(--petroleo);
 }
 
-.formulario-rodape {
-    border-top: 1px solid var(--linha);
-}
-
-/* Sem o botão de excluir, o de salvar continua à direita */
-.formulario-rodape .botao-principal {
-    margin-left: auto;
-}
-
-h2 {
+.formulario-topo h2 {
     margin: 0;
     font-size: 1.125rem;
     font-weight: 600;
 }
 
-.botao-fechar {
-    width: 36px;
-    height: 36px;
-
-    font: inherit;
-    font-size: 1.5rem;
-    line-height: 1;
-    color: #ffffff;
-
-    background: transparent;
-    border: 0;
-    border-radius: var(--raio);
-    cursor: pointer;
+.formulario-rodape {
+    border-top: 1px solid var(--petroleo-claro);
 }
 
-.botao-fechar:hover {
-    background: var(--petroleo-claro);
+/* Sem o botão de excluir, o de salvar continua à direita */
+.formulario-rodape .botao-principal {
+    margin-left: auto;
 }
 
 .formulario-campos {
@@ -413,7 +635,73 @@ h2 {
 .erro {
     margin: 0;
     font-size: 0.875rem;
-    color: var(--perigo);
+    color: var(--coral-claro);
+}
+
+.dica {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--apagado);
+}
+
+.sugestoes {
+    flex: none;
+    max-height: 260px;
+    margin: -10px 0 0;
+    padding: 4px;
+    overflow-y: auto;
+    list-style: none;
+
+    background: var(--petroleo);
+    border-radius: var(--raio);
+}
+
+.sugestoes:empty {
+    display: none;
+}
+
+.sugestao {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    padding: 6px;
+
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: left;
+    color: var(--texto);
+
+    background: none;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.sugestao:hover {
+    background: var(--petroleo-claro);
+}
+
+.sugestao-capa {
+    flex: none;
+    width: 34px;
+    height: 51px;
+    object-fit: cover;
+
+    background: var(--noite);
+    border-radius: 3px;
+}
+
+.sugestao-titulo {
+    flex: 1;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.sugestao-ano {
+    flex: none;
+    color: var(--apagado);
 }
 
 
@@ -431,7 +719,7 @@ h2 {
     font-size: 0.875rem;
     font-weight: 500;
     white-space: nowrap;
-    color: var(--superficie);
+    color: #ffffff;
 
     background: var(--verde);
     border-radius: var(--raio);
@@ -527,7 +815,7 @@ h2 {
 
 .req-tempo {
     flex: none;
-    color: #a9c4c4;
+    color: var(--apagado);
 }
 
 .req-corpo {
@@ -579,36 +867,62 @@ h2 {
         margin-left: 0;
     }
 
-    .conteudo {
-        padding-top: 20px;
+    .destaque-capa {
+        display: none;
     }
 
-    .acervo {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 14px;
+    /* Em tela estreita a capa fica acima das informações, sem girar */
+    .estojo {
+        width: min(420px, calc(100vw - 32px));
+        max-height: calc(100dvh - 32px);
+        overflow-y: auto;
     }
 
-    .cartaz {
-        padding: 12px;
+    .estojo-corpo {
+        grid-template-columns: 1fr;
+        perspective: none;
     }
 
-    .cartaz-figura {
-        height: 40%;
+    .folha {
+        position: relative;
+        left: 0;
+        width: 100%;
+        /* Baixa o suficiente para o botão de editar caber na tela */
+        height: 42dvh;
+        transform: none;
     }
 
-    .cartaz-titulo {
-        font-size: 1.375rem;
+    .estojo[open] .folha {
+        animation: none;
+    }
+
+    .folha > :first-child {
+        display: none;
+    }
+
+    .folha > :last-child {
+        transform: none;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .estojo-info {
+        grid-column: 1;
+        height: auto;
+        border-radius: 0 0 8px 8px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .cartaz,
-    .painel[open] {
+    .card-capa {
         transition: none;
-        animation: none;
     }
 
-    .cartaz:hover {
+    .card:hover .card-capa {
         transform: none;
+    }
+
+    .estojo[open] .folha,
+    .painel[open] {
+        animation: none;
     }
 }

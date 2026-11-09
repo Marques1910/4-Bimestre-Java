@@ -46,6 +46,8 @@ public class FilmeService {
                 .diretor(filme.getDiretor() != null ? filme.getDiretor() : filmeEntity.getDiretor())
                 .genero(filme.getGenero() != null ? filme.getGenero() : filmeEntity.getGenero())
                 .anoLancamento(filme.getAnoLancamento() != null ? filme.getAnoLancamento() : filmeEntity.getAnoLancamento())
+                .capaUrl(filme.getCapaUrl() != null ? filme.getCapaUrl() : filmeEntity.getCapaUrl())
+                .sinopse(filme.getSinopse() != null ? filme.getSinopse() : filmeEntity.getSinopse())
                 .build();
 
         return filmeRepository.saveAndFlush(filmeAtualizado);

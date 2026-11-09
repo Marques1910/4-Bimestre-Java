@@ -34,14 +34,31 @@
     </button>
 </header>
 
-<main class="conteudo">
-    <ul id="acervo" class="acervo"></ul>
+<main>
+    <section id="destaque" class="destaque" hidden></section>
+
+    <div id="acervo" class="acervo"></div>
 
     <div id="aviso" class="aviso" hidden>
         <p id="avisoTexto"></p>
         <button id="avisoAcao" class="botao botao-principal" type="button"></button>
     </div>
 </main>
+
+<dialog id="estojo" class="estojo" aria-labelledby="estojoTitulo">
+    <div class="estojo-corpo">
+        <div id="folha" class="folha"></div>
+
+        <div class="estojo-info">
+            <button id="fecharEstojo" class="botao-fechar" type="button" aria-label="Fechar">&times;</button>
+            <h2 id="estojoTitulo"></h2>
+            <p id="estojoDados" class="estojo-dados"></p>
+            <p id="estojoDiretor" class="estojo-diretor"></p>
+            <p id="estojoSinopse" class="estojo-sinopse"></p>
+            <button id="editarFilme" class="botao botao-principal" type="button">Editar filme</button>
+        </div>
+    </div>
+</dialog>
 
 <dialog id="painel" class="painel" aria-labelledby="painelTitulo">
     <form id="formulario" class="formulario">
@@ -53,8 +70,11 @@
         <div class="formulario-campos">
             <label>
                 Título
-                <input class="campo" name="titulo" required pattern=".*\S.*" maxlength="255">
+                <input id="campoTitulo" class="campo" name="titulo" required pattern=".*\S.*" maxlength="255" autocomplete="off">
             </label>
+
+            <ul id="sugestoes" class="sugestoes" aria-label="Filmes encontrados"></ul>
+            <p id="sugestoesAviso" class="dica" hidden></p>
 
             <label>
                 Diretor
@@ -71,7 +91,19 @@
                 <input class="campo" name="anoLancamento" type="number" required min="1888" max="2100" step="1">
             </label>
 
+            <label>
+                Endereço da capa (opcional)
+                <input class="campo" name="capaUrl" type="url" maxlength="500">
+            </label>
+
+            <label>
+                Sinopse (opcional)
+                <textarea class="campo" name="sinopse" rows="5"></textarea>
+            </label>
+
             <p id="erroPainel" class="erro" role="alert" hidden></p>
+
+            <p class="dica">Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB.</p>
         </div>
 
         <footer class="formulario-rodape">

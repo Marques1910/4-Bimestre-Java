@@ -20,6 +20,26 @@ export function filtrarFilmes(filmes, busca) {
     );
 }
 
+export function agruparPorGenero(filmes) {
+    const grupos = new Map();
+
+    for (const filme of filmes) {
+        const genero = filme.genero?.trim() || "Sem gênero";
+        grupos.set(genero, [...(grupos.get(genero) ?? []), filme]);
+    }
+
+    return [...grupos]
+        .map(([genero, filmesDoGenero]) => ({ genero, filmes: filmesDoGenero }))
+        .sort((a, b) => b.filmes.length - a.filmes.length || a.genero.localeCompare(b.genero, "pt-BR"));
+}
+
+// Filme mais recente com capa; sem nenhuma capa, o mais recente
+export function destaqueDe(filmes) {
+    const recentes = [...filmes].sort((a, b) => b.id - a.id);
+
+    return recentes.find((filme) => filme.capaUrl) ?? recentes[0] ?? null;
+}
+
 // O mesmo título sempre gera o mesmo cartaz
 export function cartazDe(titulo) {
     let codigo = 0;

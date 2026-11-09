@@ -17,7 +17,7 @@ class FilmeServiceTest {
     @Test
     void atualizarMantemCamposNaoEnviados() {
         FilmeRepository repository = mock(FilmeRepository.class);
-        Filme gravado = new Filme(1L, "Matrix", "Wachowski", "Ficção", 1999);
+        Filme gravado = new Filme(1L, "Matrix", "Wachowski", "Ficção", 1999, "https://capa.jpg", "Sinopse");
         when(repository.findById(1L)).thenReturn(Optional.of(gravado));
         when(repository.saveAndFlush(any())).then(returnsFirstArg());
 
@@ -29,5 +29,7 @@ class FilmeServiceTest {
         assertEquals("Wachowski", resultado.getDiretor());
         assertEquals("Ação", resultado.getGenero());
         assertEquals(1999, resultado.getAnoLancamento());
+        assertEquals("https://capa.jpg", resultado.getCapaUrl());
+        assertEquals("Sinopse", resultado.getSinopse());
     }
 }

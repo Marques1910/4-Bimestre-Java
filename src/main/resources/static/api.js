@@ -13,6 +13,10 @@ export const filmesApi = {
     }),
 
     excluir: (id) => requisitar(`/filmes/${id}`, { method: "DELETE" }),
+
+    pesquisar: (termo) => requisitar(`/filmes/pesquisa?termo=${encodeURIComponent(termo)}`),
+
+    detalharPesquisa: (tmdbId) => requisitar(`/filmes/pesquisa/${tmdbId}`),
 };
 
 function lerJson(texto) {
