@@ -1,300 +1,468 @@
-/* A página é uma tira de negativo 35mm sobre uma mesa de luz:
-   cada <hr> é a barra entre dois fotogramas. */
-
-@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Limelight&display=swap");
+/* A interface fica neutra: a cor da página vem dos cartazes do acervo. */
 
 :root {
-    --mesa-de-luz: #dde7ea;
-    --base-filme: #a8501a;
-    --fotograma: #ffe9c9;
-    --tinta: #2b1306;
-    --campo: #fff8ec;
-    --ciano: #0f5563;
-    --corte: #a32318;
+    --fundo-pagina: #f4f4f7;
+    --superficie: #ffffff;
+    --tinta: #16161d;
+    --apagado: #5c5c6b;
+    --linha: #d9d9e2;
+    --perigo: #b3261e;
 
-    --borda-filme: 44px;
-    --respiro: clamp(24px, 4vw, 40px);
-    --lateral: calc(var(--borda-filme) + var(--respiro));
-    --barra: 30px;
-    --canto: 14px;
-    --vao: 12px;
+    --fonte-cartaz: "Big Shoulders Display", "Arial Narrow", sans-serif;
+    --fonte-interface: "Instrument Sans", system-ui, sans-serif;
 
-    /* Cor fixa no SVG: precisa ser igual a --mesa-de-luz */
-    --furo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 34'%3E%3Crect x='2' y='6' width='16' height='22' rx='4' fill='%23dde7ea'/%3E%3C/svg%3E");
-    --furo-largura: 20px;
-    --furo-altura: 34px;
-    --furo-recuo: 12px;
+    --raio: 8px;
+    --calha: clamp(16px, 3vw, 40px);
 }
 
 * {
     box-sizing: border-box;
 }
 
-html {
-    min-height: 100%;
-    background: var(--mesa-de-luz);
+[hidden] {
+    display: none !important;
 }
 
 body {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: var(--vao);
-    align-content: start;
-
-    max-width: 800px;
-    min-height: 100vh;
-    margin: 0 auto;
-    padding: var(--barra) var(--lateral) calc(var(--barra) + var(--respiro));
-
-    font-family: "Courier Prime", "Courier New", monospace;
+    margin: 0;
+    font-family: var(--fonte-interface);
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--tinta);
-
-    box-shadow: 0 0 48px rgba(15, 85, 99, 0.3);
-
-    background:
-        linear-gradient(var(--base-filme) 0 0) bottom / 100% calc(var(--barra) + 1px) no-repeat,
-        radial-gradient(circle at 100% 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            left var(--borda-filme) bottom var(--barra) / var(--canto) var(--canto) no-repeat,
-        radial-gradient(circle at 0 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            right var(--borda-filme) bottom var(--barra) / var(--canto) var(--canto) no-repeat,
-        linear-gradient(
-            to right,
-            var(--base-filme) calc(var(--borda-filme) + 1px),
-            var(--fotograma) calc(var(--borda-filme) + 1px),
-            var(--fotograma) calc(100% - var(--borda-filme) - 1px),
-            var(--base-filme) calc(100% - var(--borda-filme) - 1px)
-        );
+    background: var(--fundo-pagina);
 }
 
-/* Furos de tracionamento, por cima das barras */
-body::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-
-    background:
-        var(--furo) left var(--furo-recuo) top 0 / var(--furo-largura) var(--furo-altura) repeat-y,
-        var(--furo) right var(--furo-recuo) top 0 / var(--furo-largura) var(--furo-altura) repeat-y;
-}
-
-/* Barra do início da tira, com os cantos do primeiro fotograma */
-body::after {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    z-index: 1;
-    height: calc(var(--barra) + var(--canto));
-    pointer-events: none;
-
-    background:
-        linear-gradient(var(--base-filme) 0 0) top / 100% calc(var(--barra) + 1px) no-repeat,
-        radial-gradient(circle at 100% 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            left var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat,
-        radial-gradient(circle at 0 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            right var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat;
-}
-
-body > * {
-    grid-column: 1 / -1;
-}
-
-/* Barra entre fotogramas */
-hr,
-h1::after {
-    height: calc(var(--barra) + 2 * var(--canto));
-    border: 0;
-
-    background:
-        /* 2px a mais escondem a emenda com os cantos em zoom fracionado */
-        linear-gradient(var(--base-filme) 0 0) center / 100% calc(var(--barra) + 2px) no-repeat,
-        radial-gradient(circle at 100% 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            left var(--borda-filme) top 0 / var(--canto) var(--canto) no-repeat,
-        radial-gradient(circle at 0 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            right var(--borda-filme) top 0 / var(--canto) var(--canto) no-repeat,
-        radial-gradient(circle at 100% 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            left var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat,
-        radial-gradient(circle at 0 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
-            right var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat;
-}
-
-hr {
-    width: auto;
-    margin: calc(var(--respiro) - var(--vao)) calc(-1 * var(--lateral));
-}
-
-/* Fotograma de abertura: o título projetado */
-h1 {
-    position: relative;
-    margin: 0 calc(-1 * var(--lateral)) calc(var(--respiro) - var(--vao));
-    padding:
-        clamp(56px, 11vw, 104px)
-        var(--lateral)
-        calc(var(--barra) + 2 * var(--canto) + clamp(40px, 7vw, 64px));
-
-    font-family: "Limelight", Georgia, serif;
-    font-size: clamp(3rem, 11.5vw, 5.75rem);
-    font-weight: 400;
-    line-height: 0.98;
-    color: var(--fotograma);
-    /* Duas cores desalinhadas, como cópia mal registrada na projeção */
-    text-shadow: 0.05em 0.05em 0 var(--base-filme);
-
-    background:
-        linear-gradient(var(--ciano) 0 0)
-        var(--borda-filme) 0 /
-        calc(100% - 2 * var(--borda-filme)) calc(100% - var(--barra) - var(--canto))
-        no-repeat;
-
-    animation: projetor 0.9s linear;
-}
-
-h1::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 0;
-}
-
-@keyframes projetor {
-    0% { opacity: 0.2; }
-    14% { opacity: 0.85; }
-    24% { opacity: 0.35; }
-    40% { opacity: 1; }
-    52% { opacity: 0.6; }
-    66%, 100% { opacity: 1; }
-}
-
-h2 {
-    margin: 0 0 4px;
-
-    font-family: "Limelight", Georgia, serif;
-    font-size: clamp(1.625rem, 4vw, 2.125rem);
-    font-weight: 400;
-    line-height: 1.15;
-}
-
-input {
-    width: 100%;
-    min-height: 48px;
-    padding: 10px 12px;
-
-    font: inherit;
-    color: var(--tinta);
-
-    background: var(--campo);
-    border: 2px solid var(--tinta);
-    border-radius: 4px;
-}
-
-input::placeholder {
-    color: #6f5240;
-    opacity: 1;
-}
-
-button {
-    min-height: 48px;
-    padding: 10px 16px;
-
-    font: inherit;
-    font-weight: 700;
-    color: var(--fotograma);
-
-    background: var(--tinta);
-    border: 2px solid var(--tinta);
-    border-radius: 4px;
-
-    cursor: pointer;
-}
-
-button:hover {
-    background: var(--ciano);
-    border-color: var(--ciano);
-}
-
-button:active {
-    transform: translateY(1px);
-}
-
-button[onclick="deletar()"] {
-    background: var(--corte);
-    border-color: var(--corte);
-}
-
-button[onclick="deletar()"]:hover {
-    background: #7c1a12;
-    border-color: #7c1a12;
-}
-
-input:focus-visible,
-button:focus-visible {
-    outline: 3px solid var(--ciano);
+:focus-visible {
+    outline: 2px solid var(--tinta);
     outline-offset: 2px;
 }
 
-/* Abaixo de 700px o placeholder do ano não caberia em meia linha */
-@media (min-width: 700px) {
-    #diretor,
-    #genero,
-    #novoDiretor,
-    #novoGenero,
-    #anoLancamento,
-    #novoAnoLancamento,
-    button[onclick="criar()"],
-    button[onclick="atualizar()"] {
-        grid-column: span 3;
-    }
 
-    #buscarId,
-    #deletarId,
-    #id {
-        grid-column: span 2;
-    }
+/* Barra superior */
 
-    #novoTitulo,
-    button[onclick="buscar()"],
-    button[onclick="deletar()"] {
-        grid-column: span 4;
-    }
+.topo {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    padding: 14px var(--calha);
+
+    background: var(--superficie);
+    border-bottom: 1px solid var(--linha);
 }
 
-#resultadoBuscar {
-    padding: 14px 16px;
-
-    background: var(--campo);
-    border: 2px solid var(--tinta);
-    border-radius: 4px;
+.marca {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex: none;
 }
 
-#resultadoBuscar:empty {
+h1 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+#contagem {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--apagado);
+}
+
+.busca {
+    flex: 1;
+    max-width: 520px;
+    margin-left: auto;
+}
+
+.topo .botao {
+    flex: none;
+}
+
+
+/* Campos e botões */
+
+.campo {
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 12px;
+
+    font: inherit;
+    color: var(--tinta);
+
+    background: var(--superficie);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+}
+
+.campo::placeholder {
+    color: var(--apagado);
+    opacity: 1;
+}
+
+.campo:hover {
+    border-color: var(--apagado);
+}
+
+.botao {
+    min-height: 44px;
+    padding: 9px 18px;
+
+    font: inherit;
+    font-weight: 600;
+
+    border-radius: var(--raio);
+    cursor: pointer;
+}
+
+.botao:disabled {
+    opacity: 0.55;
+    cursor: progress;
+}
+
+.botao-principal {
+    color: var(--superficie);
+    background: var(--tinta);
+    border: 1px solid var(--tinta);
+}
+
+.botao-principal:hover {
+    background: #34343f;
+}
+
+.botao-perigo {
+    color: var(--perigo);
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+.botao-perigo:hover {
+    border-color: var(--perigo);
+}
+
+
+/* Acervo */
+
+.conteudo {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 32px var(--calha) 64px;
+}
+
+.acervo {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+    gap: 24px 20px;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.acervo:empty {
     display: none;
 }
 
-#resultadoBuscar p {
-    margin: 4px 0;
+.cartaz {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    padding: 14px;
+    overflow: hidden;
+
+    font: inherit;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    text-align: left;
+    color: var(--texto);
+
+    background: var(--fundo);
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-#resultadoBuscar strong {
-    color: var(--ciano);
+.cartaz:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgb(22 22 29 / 0.24);
 }
 
-@media (max-width: 559px) {
-    :root {
-        --borda-filme: 26px;
-        --respiro: 16px;
-        --barra: 22px;
-        --canto: 10px;
-        --furo-largura: 14px;
-        --furo-altura: 24px;
-        --furo-recuo: 6px;
+.cartaz:focus-visible {
+    outline-offset: 3px;
+}
+
+/* Combinações com texto legível sobre o fundo (mínimo 4.5:1) */
+.paleta-0 { --fundo: #c23a22; --figura: #f5b83d; --texto: #fff6e6; }
+.paleta-1 { --fundo: #123c69; --figura: #ee6c4d; --texto: #f7f3e9; }
+.paleta-2 { --fundo: #0f6b5c; --figura: #f2c14e; --texto: #f7f3e9; }
+.paleta-3 { --fundo: #4b2a7b; --figura: #f28fad; --texto: #fbf5ff; }
+.paleta-4 { --fundo: #20202e; --figura: #e8e3d3; --texto: #f5f1e6; }
+.paleta-5 { --fundo: #8a1c3d; --figura: #f4a259; --texto: #fff4ea; }
+.paleta-6 { --fundo: #f0b429; --figura: #1f2a44; --texto: #1b1b26; }
+
+.cartaz-figura {
+    position: absolute;
+    inset: 0 0 auto;
+    /* Limite para um título de 3 linhas não invadir a figura */
+    height: 42%;
+    background: var(--figura);
+}
+
+.figura-circulo {
+    clip-path: circle(40% at 64% 44%);
+}
+
+.figura-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 34%, 0 100%);
+}
+
+.figura-faixas {
+    background: repeating-linear-gradient(var(--figura) 0 11%, transparent 11% 22%);
+}
+
+.cartaz-titulo {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    position: relative;
+
+    margin-bottom: 6px;
+
+    font-family: var(--fonte-cartaz);
+    font-size: 1.625rem;
+    font-weight: 800;
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.cartaz-linha {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.cartaz-rodape {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2px;
+}
+
+
+/* Acervo vazio, busca sem resultado e falha de conexão */
+
+.aviso {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: 60ch;
+}
+
+.aviso p {
+    margin: 0;
+    font-size: 1.125rem;
+    overflow-wrap: anywhere;
+}
+
+
+/* Painel lateral */
+
+.painel {
+    width: min(440px, 100vw);
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0 0 0 auto;
+    padding: 0;
+
+    color: var(--tinta);
+    background: var(--superficie);
+    border: 0;
+}
+
+.painel[open] {
+    animation: painel-entra 0.2s ease-out;
+}
+
+.painel::backdrop {
+    background: rgb(22 22 29 / 0.5);
+}
+
+@keyframes painel-entra {
+    from { transform: translateX(32px); }
+}
+
+.formulario {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100%;
+}
+
+.formulario-topo,
+.formulario-rodape {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+.formulario-topo {
+    border-bottom: 1px solid var(--linha);
+}
+
+.formulario-rodape {
+    border-top: 1px solid var(--linha);
+}
+
+/* Sem o botão de excluir, o de salvar continua à direita */
+.formulario-rodape .botao-principal {
+    margin-left: auto;
+}
+
+h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.botao-fechar {
+    width: 36px;
+    height: 36px;
+
+    font: inherit;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--apagado);
+
+    background: transparent;
+    border: 0;
+    border-radius: var(--raio);
+    cursor: pointer;
+}
+
+.botao-fechar:hover {
+    color: var(--tinta);
+    background: var(--fundo-pagina);
+}
+
+.formulario-campos {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.formulario-campos label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.formulario-campos .campo {
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.erro {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--perigo);
+}
+
+
+/* Confirmação depois de salvar ou excluir */
+
+.recado {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    z-index: 10;
+    transform: translateX(-50%);
+
+    padding: 10px 16px;
+
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--superficie);
+
+    background: var(--tinta);
+    border-radius: var(--raio);
+}
+
+
+@media (max-width: 720px) {
+    .topo {
+        flex-wrap: wrap;
+        gap: 10px 12px;
+    }
+
+    .marca {
+        flex: 1;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    h1 {
+        white-space: nowrap;
+    }
+
+    .busca {
+        order: 3;
+        flex-basis: 100%;
+        max-width: none;
+        margin-left: 0;
+    }
+
+    .conteudo {
+        padding-top: 20px;
+    }
+
+    .acervo {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .cartaz {
+        padding: 12px;
+    }
+
+    .cartaz-figura {
+        height: 40%;
+    }
+
+    .cartaz-titulo {
+        font-size: 1.375rem;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    h1 {
+    .cartaz,
+    .painel[open] {
+        transition: none;
         animation: none;
+    }
+
+    .cartaz:hover {
+        transform: none;
     }
 }

@@ -1,351 +1,241 @@
-const api = "/filmes";
-
+import { cartazDe, filtrarFilmes } from "./catalogo.js";
 
 // =========================
-// CRIAR FILME
+// COMUNICAÇÃO COM A API
 // =========================
 
-async function criar() {
+const filmesApi = {
+    listar: () => requisitar("/filmes"),
 
-    const titulo = document.getElementById("titulo").value.trim();
-    const diretor = document.getElementById("diretor").value.trim();
-    const genero = document.getElementById("genero").value.trim();
-    const anoLancamento = document.getElementById("anoLancamento").value;
+    salvar: (filme, id) => requisitar(id ? `/filmes/${id}` : "/filmes", {
+        method: id ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(filme),
+    }),
 
-    if (titulo === "" || diretor === "") {
+    excluir: (id) => requisitar(`/filmes/${id}`, { method: "DELETE" }),
+};
 
-        alert("Preencha o título e o diretor!");
-
-        return;
-    }
-
-    const filme = {
-        titulo: titulo,
-        diretor: diretor,
-        genero: genero,
-        anoLancamento: anoLancamento
-            ? Number(anoLancamento)
-            : null
-    };
+async function requisitar(url, opcoes) {
+    let resposta;
 
     try {
-
-        const resp = await fetch(api, {
-
-            method: "POST",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(filme)
-
-        });
-
-        if (resp.ok) {
-
-            alert("Filme cadastrado com sucesso!");
-
-            limparCadastro();
-
-        } else {
-
-            const mensagem = await tratarErro(resp);
-
-            alert("Erro ao cadastrar filme: " + mensagem);
-
-        }
-
-    } catch (erro) {
-
-        console.error("Erro:", erro);
-
-        alert("Erro ao conectar com o servidor.");
-
+        resposta = await fetch(url, opcoes);
+    } catch {
+        throw new Error("Não foi possível conectar ao servidor.");
     }
 
+    if (!resposta.ok) {
+        const dados = await resposta.json().catch(() => ({}));
+        throw new Error(dados.message || "O servidor recusou a operação.");
+    }
+
+    return resposta.status === 204 ? null : resposta.json();
 }
 
 
 // =========================
-// BUSCAR FILME
+// ESTADO E ELEMENTOS
 // =========================
 
-async function buscar() {
+let filmes = [];
+let filmeAberto = null;
+let exclusaoArmada = false;
+let temporizadorRecado;
 
-    const id = document.getElementById("buscarId").value;
+const $ = (id) => document.getElementById(id);
 
-    const resultado = document.getElementById("resultadoBuscar");
+const acervo = $("acervo");
+const busca = $("busca");
+const painel = $("painel");
+const formulario = $("formulario");
+const erroPainel = $("erroPainel");
+const botaoSalvar = $("salvarFilme");
+const botaoExcluir = $("excluirFilme");
 
-    resultado.innerHTML = "";
 
-    if (id === "") {
+// =========================
+// ACERVO
+// =========================
 
-        alert("Digite o ID do filme!");
-
-        return;
-    }
-
-    try {
-
-        const resp = await fetch(`${api}/${id}`);
-
-        if (resp.ok) {
-
-            const filme = await resp.json();
-
-            mostrarFilme(filme);
-
-        } else {
-
-            resultado.innerHTML = `
-                <p>Filme não encontrado!</p>
-            `;
-
-        }
-
-    } catch (erro) {
-
-        console.error("Erro:", erro);
-
-        resultado.innerHTML = `
-            <p>Erro ao buscar o filme.</p>
-        `;
-
-    }
-
+function criarElemento(tag, classe, texto = "") {
+    const elemento = document.createElement(tag);
+    elemento.className = classe;
+    elemento.textContent = texto;
+    return elemento;
 }
 
+function criarCartaz(filme) {
+    const { paleta, figura } = cartazDe(filme.titulo);
 
-// =========================
-// MOSTRAR FILME
-// =========================
+    const cartaz = criarElemento("button", `cartaz paleta-${paleta}`);
+    cartaz.type = "button";
+    cartaz.setAttribute("aria-label", `Editar ${filme.titulo}`);
+    cartaz.addEventListener("click", () => abrirPainel(filme));
 
-function mostrarFilme(filme) {
-
-    const resultado = document.getElementById("resultadoBuscar");
-
-    resultado.innerHTML = `
-        <p><strong>ID:</strong> ${filme.id ?? "Não informado"}</p>
-
-        <p>
-            <strong>Título:</strong>
-            ${filme.titulo ?? "Não informado"}
-        </p>
-
-        <p>
-            <strong>Diretor:</strong>
-            ${filme.diretor ?? "Não informado"}
-        </p>
-
-        <p>
-            <strong>Gênero:</strong>
-            ${filme.genero ?? "Não informado"}
-        </p>
-
-        <p>
-            <strong>Ano:</strong>
-            ${filme.anoLancamento ?? "Não informado"}
-        </p>
-    `;
-
-}
-
-
-// =========================
-// DELETAR FILME
-// =========================
-
-async function deletar() {
-
-    const id = document.getElementById("deletarId").value;
-
-    if (id === "") {
-
-        alert("Digite o ID do filme!");
-
-        return;
-    }
-
-    const confirmar = confirm(
-        "Deseja realmente excluir este filme?"
+    const rodape = criarElemento("span", "cartaz-rodape");
+    rodape.append(
+        criarElemento("span", "", filme.anoLancamento ?? "Sem ano"),
+        criarElemento("span", "", `ID ${filme.id}`),
     );
 
-    if (!confirmar) {
+    cartaz.append(
+        criarElemento("span", `cartaz-figura figura-${figura}`),
+        criarElemento("span", "cartaz-titulo", filme.titulo),
+        criarElemento("span", "cartaz-linha", filme.diretor ?? ""),
+        criarElemento("span", "cartaz-linha", filme.genero ?? ""),
+        rodape,
+    );
 
-        return;
+    const item = document.createElement("li");
+    item.append(cartaz);
+    return item;
+}
+
+function mostrarAviso(texto, rotuloAcao, acao) {
+    $("avisoTexto").textContent = texto;
+    $("avisoAcao").textContent = rotuloAcao;
+    $("avisoAcao").onclick = acao;
+    $("aviso").hidden = false;
+}
+
+function desenharAcervo() {
+    const visiveis = filtrarFilmes(filmes, busca.value);
+
+    acervo.replaceChildren(...visiveis.map(criarCartaz));
+    $("contagem").textContent = filmes.length === 1 ? "1 filme" : `${filmes.length} filmes`;
+    $("aviso").hidden = true;
+
+    if (filmes.length === 0) {
+        mostrarAviso("Nenhum filme cadastrado.", "Cadastrar primeiro filme", () => abrirPainel());
+    } else if (visiveis.length === 0) {
+        mostrarAviso(`Nenhum filme encontrado para "${busca.value.trim()}".`, "Limpar busca", () => {
+            busca.value = "";
+            desenharAcervo();
+            busca.focus();
+        });
     }
+}
 
+async function carregarAcervo() {
     try {
-
-        const resp = await fetch(
-            `${api}/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-        if (resp.ok) {
-
-            alert("Filme deletado com sucesso!");
-
-            document.getElementById("deletarId").value = "";
-
-        } else {
-
-            const mensagem = await tratarErro(resp);
-
-            alert("Erro ao deletar filme: " + mensagem);
-
-        }
-
+        filmes = await filmesApi.listar();
+        desenharAcervo();
     } catch (erro) {
-
-        console.error("Erro:", erro);
-
-        alert("Erro ao conectar com o servidor.");
-
+        acervo.replaceChildren();
+        $("contagem").textContent = "";
+        mostrarAviso(`${erro.message} Verifique se a aplicação está rodando.`, "Tentar novamente", carregarAcervo);
     }
-
 }
 
 
 // =========================
-// ATUALIZAR FILME
+// PAINEL DE CADASTRO E EDIÇÃO
 // =========================
 
-async function atualizar() {
+function desarmarExclusao() {
+    exclusaoArmada = false;
+    botaoExcluir.textContent = "Excluir filme";
+}
 
-    const id = document.getElementById("id").value;
+function mostrarErro(mensagem) {
+    erroPainel.textContent = mensagem;
+    erroPainel.hidden = false;
+}
 
-    const titulo =
-        document.getElementById("novoTitulo").value.trim();
+function abrirPainel(filme = null) {
+    filmeAberto = filme;
+    formulario.reset();
+    erroPainel.hidden = true;
+    desarmarExclusao();
 
-    const diretor =
-        document.getElementById("novoDiretor").value.trim();
+    $("painelTitulo").textContent = filme ? `Editar filme ${filme.id}` : "Novo filme";
+    botaoSalvar.textContent = filme ? "Salvar alterações" : "Cadastrar filme";
+    botaoExcluir.hidden = !filme;
 
-    const genero =
-        document.getElementById("novoGenero").value.trim();
-
-    const anoLancamento =
-        document.getElementById("novoAnoLancamento").value;
-
-    if (id === "") {
-
-        alert("Digite o ID do filme!");
-
-        return;
+    if (filme) {
+        for (const campo of ["titulo", "diretor", "genero", "anoLancamento"]) {
+            formulario.elements[campo].value = filme[campo] ?? "";
+        }
     }
 
-    // Campo vazio vai como null para o backend manter o valor atual
-    const filme = {
-        titulo: titulo || null,
-        diretor: diretor || null,
-        genero: genero || null,
-        anoLancamento: anoLancamento
-            ? Number(anoLancamento)
-            : null
+    painel.showModal();
+}
+
+function lerFormulario() {
+    const { titulo, diretor, genero, anoLancamento } = Object.fromEntries(new FormData(formulario));
+
+    return {
+        titulo: titulo.trim(),
+        diretor: diretor.trim(),
+        genero: genero.trim(),
+        anoLancamento: Number(anoLancamento),
     };
+}
+
+function mostrarRecado(texto) {
+    const recado = $("recado");
+
+    recado.textContent = texto;
+    recado.hidden = false;
+
+    clearTimeout(temporizadorRecado);
+    temporizadorRecado = setTimeout(() => { recado.hidden = true; }, 3000);
+}
+
+async function executarNoPainel(operacao, recado) {
+    erroPainel.hidden = true;
+    botaoSalvar.disabled = botaoExcluir.disabled = true;
 
     try {
-
-        const resp = await fetch(
-            `${api}/${id}`,
-            {
-
-                method: "PUT",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify(filme)
-
-            }
-        );
-
-        if (resp.ok) {
-
-            alert("Filme atualizado com sucesso!");
-
-            limparAtualizacao();
-
-        } else {
-
-            const mensagem = await tratarErro(resp);
-
-            alert("Erro ao atualizar filme: " + mensagem);
-
-        }
-
+        await operacao();
+        await carregarAcervo();
+        painel.close();
+        mostrarRecado(recado);
     } catch (erro) {
+        mostrarErro(erro.message);
+    } finally {
+        botaoSalvar.disabled = botaoExcluir.disabled = false;
+    }
+}
 
-        console.error("Erro:", erro);
 
-        alert("Erro ao conectar com o servidor.");
+// =========================
+// EVENTOS
+// =========================
 
+formulario.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+
+    const id = filmeAberto?.id;
+
+    executarNoPainel(
+        () => filmesApi.salvar(lerFormulario(), id),
+        id ? "Alterações salvas." : "Filme cadastrado.",
+    );
+});
+
+botaoExcluir.addEventListener("click", () => {
+    if (!exclusaoArmada) {
+        exclusaoArmada = true;
+        botaoExcluir.textContent = "Confirmar exclusão";
+        return;
     }
 
-}
+    desarmarExclusao();
+    executarNoPainel(() => filmesApi.excluir(filmeAberto.id), "Filme excluído.");
+});
 
+botaoExcluir.addEventListener("blur", desarmarExclusao);
+busca.addEventListener("input", desenharAcervo);
+$("novoFilme").addEventListener("click", () => abrirPainel());
+$("fecharPainel").addEventListener("click", () => painel.close());
 
-// =========================
-// TRATAR ERRO DA API
-// =========================
-
-async function tratarErro(resp) {
-
-    try {
-
-        const dados = await resp.json();
-
-        if (dados.message) {
-            return dados.message;
-        }
-
-        if (dados.mensagem) {
-            return dados.mensagem;
-        }
-
-        if (dados.erro) {
-            return dados.erro;
-        }
-
-        return "Erro na requisição.";
-
-    } catch {
-
-        return "Erro na requisição.";
-
+// Clique fora do formulário cai no próprio <dialog>, que é o fundo escurecido
+painel.addEventListener("click", (evento) => {
+    if (evento.target === painel) {
+        painel.close();
     }
+});
 
-}
-
-
-// =========================
-// LIMPAR CADASTRO
-// =========================
-
-function limparCadastro() {
-
-    document.getElementById("titulo").value = "";
-    document.getElementById("diretor").value = "";
-    document.getElementById("genero").value = "";
-    document.getElementById("anoLancamento").value = "";
-
-}
-
-
-// =========================
-// LIMPAR ATUALIZAÇÃO
-// =========================
-
-function limparAtualizacao() {
-
-    document.getElementById("id").value = "";
-    document.getElementById("novoTitulo").value = "";
-    document.getElementById("novoDiretor").value = "";
-    document.getElementById("novoGenero").value = "";
-    document.getElementById("novoAnoLancamento").value = "";
-
-}
+carregarAcervo();

@@ -7,127 +7,83 @@
 
     <title>Cadastro de Filmes</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800&family=Instrument+Sans:wght@400;500;600&display=swap">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>Cadastro de Filmes</h1>
+<header class="topo">
+    <div class="marca">
+        <h1>Cadastro de Filmes</h1>
+        <p id="contagem"></p>
+    </div>
 
-<!-- CADASTRAR FILME -->
+    <input
+            id="busca"
+            class="campo busca"
+            type="search"
+            aria-label="Buscar filmes"
+            placeholder="Buscar filme, diretor, ano ou ID"
+    >
 
-<h2>Cadastrar Filme</h2>
+    <button id="novoFilme" class="botao botao-principal" type="button">
+        Novo filme
+    </button>
+</header>
 
-<input
-        type="text"
-        id="titulo"
-        placeholder="Título do filme"
->
+<main class="conteudo">
+    <ul id="acervo" class="acervo"></ul>
 
-<input
-        type="text"
-        id="diretor"
-        placeholder="Diretor"
->
+    <div id="aviso" class="aviso" hidden>
+        <p id="avisoTexto"></p>
+        <button id="avisoAcao" class="botao botao-principal" type="button"></button>
+    </div>
+</main>
 
-<input
-        type="text"
-        id="genero"
-        placeholder="Gênero"
->
+<dialog id="painel" class="painel" aria-labelledby="painelTitulo">
+    <form id="formulario" class="formulario">
+        <header class="formulario-topo">
+            <h2 id="painelTitulo"></h2>
+            <button id="fecharPainel" class="botao-fechar" type="button" aria-label="Fechar">&times;</button>
+        </header>
 
-<input
-        type="number"
-        id="anoLancamento"
-        placeholder="Ano de lançamento"
->
+        <div class="formulario-campos">
+            <label>
+                Título
+                <input class="campo" name="titulo" required pattern=".*\S.*" maxlength="255">
+            </label>
 
-<button onclick="criar()">
-    Salvar
-</button>
+            <label>
+                Diretor
+                <input class="campo" name="diretor" required pattern=".*\S.*" maxlength="255">
+            </label>
 
+            <label>
+                Gênero
+                <input class="campo" name="genero" required pattern=".*\S.*" maxlength="255">
+            </label>
 
-<hr>
+            <label>
+                Ano de lançamento
+                <input class="campo" name="anoLancamento" type="number" required min="1888" max="2100" step="1">
+            </label>
 
+            <p id="erroPainel" class="erro" role="alert" hidden></p>
+        </div>
 
-<!-- BUSCAR FILME -->
+        <footer class="formulario-rodape">
+            <button id="excluirFilme" class="botao botao-perigo" type="button"></button>
+            <button id="salvarFilme" class="botao botao-principal" type="submit"></button>
+        </footer>
+    </form>
+</dialog>
 
-<h2>Buscar Filme</h2>
+<div id="recado" class="recado" role="status" hidden></div>
 
-<input
-        type="number"
-        id="buscarId"
-        placeholder="ID do filme"
->
-
-<button onclick="buscar()">
-    Buscar
-</button>
-
-<div id="resultadoBuscar"></div>
-
-
-<hr>
-
-
-<!-- DELETAR FILME -->
-
-<h2>Deletar Filme</h2>
-
-<input
-        type="number"
-        id="deletarId"
-        placeholder="ID do filme"
->
-
-<button onclick="deletar()">
-    Deletar
-</button>
-
-
-<hr>
-
-
-<!-- ATUALIZAR FILME -->
-
-<h2>Atualizar Filme</h2>
-
-<input
-        type="number"
-        id="id"
-        placeholder="ID do filme"
->
-
-<input
-        type="text"
-        id="novoTitulo"
-        placeholder="Novo título"
->
-
-<input
-        type="text"
-        id="novoDiretor"
-        placeholder="Novo diretor"
->
-
-<input
-        type="text"
-        id="novoGenero"
-        placeholder="Novo gênero"
->
-
-<input
-        type="number"
-        id="novoAnoLancamento"
-        placeholder="Novo ano de lançamento"
->
-
-<button onclick="atualizar()">
-    Atualizar
-</button>
-
-
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 
 </body>
 
