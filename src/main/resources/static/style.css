@@ -1,83 +1,300 @@
+/* A página é uma tira de negativo 35mm sobre uma mesa de luz:
+   cada <hr> é a barra entre dois fotogramas. */
+
+@import url("https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Limelight&display=swap");
+
+:root {
+    --mesa-de-luz: #dde7ea;
+    --base-filme: #a8501a;
+    --fotograma: #ffe9c9;
+    --tinta: #2b1306;
+    --campo: #fff8ec;
+    --ciano: #0f5563;
+    --corte: #a32318;
+
+    --borda-filme: 44px;
+    --respiro: clamp(24px, 4vw, 40px);
+    --lateral: calc(var(--borda-filme) + var(--respiro));
+    --barra: 30px;
+    --canto: 14px;
+    --vao: 12px;
+
+    /* Cor fixa no SVG: precisa ser igual a --mesa-de-luz */
+    --furo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 34'%3E%3Crect x='2' y='6' width='16' height='22' rx='4' fill='%23dde7ea'/%3E%3C/svg%3E");
+    --furo-largura: 20px;
+    --furo-altura: 34px;
+    --furo-recuo: 12px;
+}
+
 * {
     box-sizing: border-box;
 }
 
-body {
-    max-width: 800px;
-    margin: auto;
-    padding: 30px 20px;
-
-    font-family: Arial, sans-serif;
-
-    background-color: #f4f4f4;
-    color: #222;
+html {
+    min-height: 100%;
+    background: var(--mesa-de-luz);
 }
 
+body {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--vao);
+    align-content: start;
+
+    max-width: 800px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: var(--barra) var(--lateral) calc(var(--barra) + var(--respiro));
+
+    font-family: "Courier Prime", "Courier New", monospace;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--tinta);
+
+    box-shadow: 0 0 48px rgba(15, 85, 99, 0.3);
+
+    background:
+        linear-gradient(var(--base-filme) 0 0) bottom / 100% calc(var(--barra) + 1px) no-repeat,
+        radial-gradient(circle at 100% 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            left var(--borda-filme) bottom var(--barra) / var(--canto) var(--canto) no-repeat,
+        radial-gradient(circle at 0 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            right var(--borda-filme) bottom var(--barra) / var(--canto) var(--canto) no-repeat,
+        linear-gradient(
+            to right,
+            var(--base-filme) calc(var(--borda-filme) + 1px),
+            var(--fotograma) calc(var(--borda-filme) + 1px),
+            var(--fotograma) calc(100% - var(--borda-filme) - 1px),
+            var(--base-filme) calc(100% - var(--borda-filme) - 1px)
+        );
+}
+
+/* Furos de tracionamento, por cima das barras */
+body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+
+    background:
+        var(--furo) left var(--furo-recuo) top 0 / var(--furo-largura) var(--furo-altura) repeat-y,
+        var(--furo) right var(--furo-recuo) top 0 / var(--furo-largura) var(--furo-altura) repeat-y;
+}
+
+/* Barra do início da tira, com os cantos do primeiro fotograma */
+body::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 1;
+    height: calc(var(--barra) + var(--canto));
+    pointer-events: none;
+
+    background:
+        linear-gradient(var(--base-filme) 0 0) top / 100% calc(var(--barra) + 1px) no-repeat,
+        radial-gradient(circle at 100% 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            left var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat,
+        radial-gradient(circle at 0 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            right var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat;
+}
+
+body > * {
+    grid-column: 1 / -1;
+}
+
+/* Barra entre fotogramas */
+hr,
+h1::after {
+    height: calc(var(--barra) + 2 * var(--canto));
+    border: 0;
+
+    background:
+        /* 2px a mais escondem a emenda com os cantos em zoom fracionado */
+        linear-gradient(var(--base-filme) 0 0) center / 100% calc(var(--barra) + 2px) no-repeat,
+        radial-gradient(circle at 100% 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            left var(--borda-filme) top 0 / var(--canto) var(--canto) no-repeat,
+        radial-gradient(circle at 0 0, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            right var(--borda-filme) top 0 / var(--canto) var(--canto) no-repeat,
+        radial-gradient(circle at 100% 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            left var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat,
+        radial-gradient(circle at 0 100%, transparent calc(var(--canto) - 0.5px), var(--base-filme) var(--canto))
+            right var(--borda-filme) bottom 0 / var(--canto) var(--canto) no-repeat;
+}
+
+hr {
+    width: auto;
+    margin: calc(var(--respiro) - var(--vao)) calc(-1 * var(--lateral));
+}
+
+/* Fotograma de abertura: o título projetado */
 h1 {
-    text-align: center;
-    margin-bottom: 30px;
+    position: relative;
+    margin: 0 calc(-1 * var(--lateral)) calc(var(--respiro) - var(--vao));
+    padding:
+        clamp(56px, 11vw, 104px)
+        var(--lateral)
+        calc(var(--barra) + 2 * var(--canto) + clamp(40px, 7vw, 64px));
+
+    font-family: "Limelight", Georgia, serif;
+    font-size: clamp(3rem, 11.5vw, 5.75rem);
+    font-weight: 400;
+    line-height: 0.98;
+    color: var(--fotograma);
+    /* Duas cores desalinhadas, como cópia mal registrada na projeção */
+    text-shadow: 0.05em 0.05em 0 var(--base-filme);
+
+    background:
+        linear-gradient(var(--ciano) 0 0)
+        var(--borda-filme) 0 /
+        calc(100% - 2 * var(--borda-filme)) calc(100% - var(--barra) - var(--canto))
+        no-repeat;
+
+    animation: projetor 0.9s linear;
+}
+
+h1::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+}
+
+@keyframes projetor {
+    0% { opacity: 0.2; }
+    14% { opacity: 0.85; }
+    24% { opacity: 0.35; }
+    40% { opacity: 1; }
+    52% { opacity: 0.6; }
+    66%, 100% { opacity: 1; }
 }
 
 h2 {
-    margin-top: 25px;
-    color: #333;
+    margin: 0 0 4px;
+
+    font-family: "Limelight", Georgia, serif;
+    font-size: clamp(1.625rem, 4vw, 2.125rem);
+    font-weight: 400;
+    line-height: 1.15;
 }
 
 input {
     width: 100%;
-    padding: 10px;
-    margin: 7px 0;
+    min-height: 48px;
+    padding: 10px 12px;
 
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    font: inherit;
+    color: var(--tinta);
 
-    font-size: 14px;
+    background: var(--campo);
+    border: 2px solid var(--tinta);
+    border-radius: 4px;
 }
 
-input:focus {
-    outline: none;
-    border-color: #3b82f6;
+input::placeholder {
+    color: #6f5240;
+    opacity: 1;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
+    min-height: 48px;
+    padding: 10px 16px;
 
-    background-color: #3b82f6;
-    color: white;
+    font: inherit;
+    font-weight: 700;
+    color: var(--fotograma);
 
-    border: none;
-    border-radius: 5px;
+    background: var(--tinta);
+    border: 2px solid var(--tinta);
+    border-radius: 4px;
 
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #2563eb;
+    background: var(--ciano);
+    border-color: var(--ciano);
 }
 
-hr {
-    margin: 30px 0;
+button:active {
+    transform: translateY(1px);
+}
 
-    border: none;
-    border-top: 1px solid #ddd;
+button[onclick="deletar()"] {
+    background: var(--corte);
+    border-color: var(--corte);
+}
+
+button[onclick="deletar()"]:hover {
+    background: #7c1a12;
+    border-color: #7c1a12;
+}
+
+input:focus-visible,
+button:focus-visible {
+    outline: 3px solid var(--ciano);
+    outline-offset: 2px;
+}
+
+/* Abaixo de 700px o placeholder do ano não caberia em meia linha */
+@media (min-width: 700px) {
+    #diretor,
+    #genero,
+    #novoDiretor,
+    #novoGenero,
+    #anoLancamento,
+    #novoAnoLancamento,
+    button[onclick="criar()"],
+    button[onclick="atualizar()"] {
+        grid-column: span 3;
+    }
+
+    #buscarId,
+    #deletarId,
+    #id {
+        grid-column: span 2;
+    }
+
+    #novoTitulo,
+    button[onclick="buscar()"],
+    button[onclick="deletar()"] {
+        grid-column: span 4;
+    }
 }
 
 #resultadoBuscar {
-    margin-top: 10px;
-    padding: 12px;
+    padding: 14px 16px;
 
-    background-color: white;
+    background: var(--campo);
+    border: 2px solid var(--tinta);
+    border-radius: 4px;
+}
 
-    border: 1px solid #ddd;
-    border-radius: 5px;
+#resultadoBuscar:empty {
+    display: none;
 }
 
 #resultadoBuscar p {
-    margin: 5px 0;
+    margin: 4px 0;
 }
 
 #resultadoBuscar strong {
-    color: #2563eb;
+    color: var(--ciano);
+}
+
+@media (max-width: 559px) {
+    :root {
+        --borda-filme: 26px;
+        --respiro: 16px;
+        --barra: 22px;
+        --canto: 10px;
+        --furo-largura: 14px;
+        --furo-altura: 24px;
+        --furo-recuo: 6px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    h1 {
+        animation: none;
+    }
 }
