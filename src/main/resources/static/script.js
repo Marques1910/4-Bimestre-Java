@@ -1,38 +1,6 @@
+import { filmesApi } from "./api.js";
 import { cartazDe, filtrarFilmes } from "./catalogo.js";
-
-// =========================
-// COMUNICAÇÃO COM A API
-// =========================
-
-const filmesApi = {
-    listar: () => requisitar("/filmes"),
-
-    salvar: (filme, id) => requisitar(id ? `/filmes/${id}` : "/filmes", {
-        method: id ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(filme),
-    }),
-
-    excluir: (id) => requisitar(`/filmes/${id}`, { method: "DELETE" }),
-};
-
-async function requisitar(url, opcoes) {
-    let resposta;
-
-    try {
-        resposta = await fetch(url, opcoes);
-    } catch {
-        throw new Error("Não foi possível conectar ao servidor.");
-    }
-
-    if (!resposta.ok) {
-        const dados = await resposta.json().catch(() => ({}));
-        throw new Error(dados.message || "O servidor recusou a operação.");
-    }
-
-    return resposta.status === 204 ? null : resposta.json();
-}
-
+import { criarElemento } from "./dom.js";
 
 // =========================
 // ESTADO E ELEMENTOS
@@ -58,20 +26,13 @@ const botaoExcluir = $("excluirFilme");
 // ACERVO
 // =========================
 
-function criarElemento(tag, classe, texto = "") {
-    const elemento = document.createElement(tag);
-    elemento.className = classe;
-    elemento.textContent = texto;
-    return elemento;
-}
-
 function criarCartaz(filme) {
     const { paleta, figura } = cartazDe(filme.titulo);
 
     const cartaz = criarElemento("button", `cartaz paleta-${paleta}`);
     cartaz.type = "button";
     cartaz.setAttribute("aria-label", `Editar ${filme.titulo}`);
-    cartaz.addEventListener("click", () => abrirPainel(filme));
+    cartaz.addEventListener("click", () => abrirFilme(filme.id));
 
     const rodape = criarElemento("span", "cartaz-rodape");
     rodape.append(
@@ -159,7 +120,19 @@ function abrirPainel(filme = null) {
         }
     }
 
-    painel.showModal();
+    if (!painel.open) {
+        painel.showModal();
+    }
+}
+
+// Busca no backend para editar o dado atual, mesmo que a grade esteja desatualizada
+async function abrirFilme(id) {
+    try {
+        abrirPainel(await filmesApi.buscar(id));
+    } catch (erro) {
+        mostrarRecado(erro.message, true);
+        await carregarAcervo();
+    }
 }
 
 function lerFormulario() {
@@ -173,10 +146,11 @@ function lerFormulario() {
     };
 }
 
-function mostrarRecado(texto) {
+function mostrarRecado(texto, ehErro = false) {
     const recado = $("recado");
 
     recado.textContent = texto;
+    recado.classList.toggle("recado-erro", ehErro);
     recado.hidden = false;
 
     clearTimeout(temporizadorRecado);

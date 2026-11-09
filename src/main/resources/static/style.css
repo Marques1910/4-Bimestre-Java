@@ -1,12 +1,24 @@
-/* A interface fica neutra: a cor da página vem dos cartazes do acervo. */
+/* Paleta de cartaz de cinema: petróleo na estrutura, mostarda na ação principal,
+   coral no que é destrutivo. */
 
 :root {
-    --fundo-pagina: #f4f4f7;
+    --petroleo: #0b3c49;
+    --petroleo-claro: #12566a;
+    --mostarda: #f5b83d;
+    --coral: #d03e27;
+    --verde: #0f6b5c;
+    --fundo-pagina: #e6f0ee;
     --superficie: #ffffff;
-    --tinta: #16161d;
-    --apagado: #5c5c6b;
-    --linha: #d9d9e2;
-    --perigo: #b3261e;
+    --tinta: #13262b;
+    --apagado: #4d6369;
+    --linha: #c5d6d3;
+    --perigo: var(--coral);
+
+    /* Cores dos verbos, sobre o fundo petróleo do monitor */
+    --verbo-get: #5fd3b3;
+    --verbo-post: #f5b83d;
+    --verbo-put: #8ab4ff;
+    --verbo-delete: #ff8a75;
 
     --fonte-cartaz: "Big Shoulders Display", "Arial Narrow", sans-serif;
     --fonte-interface: "Instrument Sans", system-ui, sans-serif;
@@ -33,8 +45,14 @@ body {
 }
 
 :focus-visible {
-    outline: 2px solid var(--tinta);
+    outline: 2px solid var(--petroleo);
     outline-offset: 2px;
+}
+
+.topo :focus-visible,
+.monitor :focus-visible,
+.formulario-topo :focus-visible {
+    outline-color: #ffffff;
 }
 
 
@@ -51,8 +69,8 @@ body {
 
     padding: 14px var(--calha);
 
-    background: var(--superficie);
-    border-bottom: 1px solid var(--linha);
+    color: #ffffff;
+    background: var(--petroleo);
 }
 
 .marca {
@@ -72,7 +90,7 @@ h1 {
 #contagem {
     margin: 0;
     font-size: 0.875rem;
-    color: var(--apagado);
+    color: var(--mostarda);
 }
 
 .busca {
@@ -83,6 +101,14 @@ h1 {
 
 .topo .botao {
     flex: none;
+    color: var(--tinta);
+    background: var(--mostarda);
+    border-color: var(--mostarda);
+}
+
+.topo .botao:hover {
+    background: #ffcb5e;
+    border-color: #ffcb5e;
 }
 
 
@@ -107,7 +133,7 @@ h1 {
 }
 
 .campo:hover {
-    border-color: var(--apagado);
+    border-color: var(--petroleo);
 }
 
 .botao {
@@ -128,12 +154,13 @@ h1 {
 
 .botao-principal {
     color: var(--superficie);
-    background: var(--tinta);
-    border: 1px solid var(--tinta);
+    background: var(--petroleo);
+    border: 1px solid var(--petroleo);
 }
 
 .botao-principal:hover {
-    background: #34343f;
+    background: var(--petroleo-claro);
+    border-color: var(--petroleo-claro);
 }
 
 .botao-perigo {
@@ -152,7 +179,8 @@ h1 {
 .conteudo {
     max-width: 1440px;
     margin: 0 auto;
-    padding: 32px var(--calha) 64px;
+    /* Espaço para o último cartaz não ficar atrás do monitor */
+    padding: 32px var(--calha) 96px;
 }
 
 .acervo {
@@ -300,7 +328,7 @@ h1 {
 }
 
 .painel::backdrop {
-    background: rgb(22 22 29 / 0.5);
+    background: rgb(11 60 73 / 0.6);
 }
 
 @keyframes painel-entra {
@@ -323,7 +351,8 @@ h1 {
 }
 
 .formulario-topo {
-    border-bottom: 1px solid var(--linha);
+    color: #ffffff;
+    background: var(--petroleo);
 }
 
 .formulario-rodape {
@@ -348,7 +377,7 @@ h2 {
     font: inherit;
     font-size: 1.5rem;
     line-height: 1;
-    color: var(--apagado);
+    color: #ffffff;
 
     background: transparent;
     border: 0;
@@ -357,8 +386,7 @@ h2 {
 }
 
 .botao-fechar:hover {
-    color: var(--tinta);
-    background: var(--fundo-pagina);
+    background: var(--petroleo-claro);
 }
 
 .formulario-campos {
@@ -393,7 +421,7 @@ h2 {
 
 .recado {
     position: fixed;
-    bottom: 24px;
+    bottom: 68px;
     left: 50%;
     z-index: 10;
     transform: translateX(-50%);
@@ -405,8 +433,126 @@ h2 {
     white-space: nowrap;
     color: var(--superficie);
 
-    background: var(--tinta);
+    background: var(--verde);
     border-radius: var(--raio);
+}
+
+.recado-erro {
+    background: var(--coral);
+}
+
+
+/* Monitor das requisições HTTP feitas pelo site */
+
+.monitor {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 4;
+
+    font-size: 0.875rem;
+    color: #e7f2f0;
+
+    background: var(--petroleo);
+}
+
+.monitor summary {
+    cursor: pointer;
+}
+
+.monitor > summary {
+    padding: 13px var(--calha);
+    font-weight: 600;
+}
+
+.monitor-resumo,
+.req-cabecalho {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: calc(100% - 20px);
+    vertical-align: middle;
+}
+
+.monitor-resumo {
+    margin-left: 14px;
+    font-weight: 400;
+}
+
+.monitor-lista {
+    max-height: 45vh;
+    margin: 0;
+    padding: 0 var(--calha) 12px;
+    overflow-y: auto;
+    list-style: none;
+}
+
+.monitor-lista li {
+    padding: 8px 0;
+    border-top: 1px solid var(--petroleo-claro);
+}
+
+.verbo {
+    flex: none;
+    min-width: 60px;
+    padding: 1px 6px;
+
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    color: #0b2a33;
+
+    border-radius: 4px;
+}
+
+.verbo-get { background: var(--verbo-get); }
+.verbo-post { background: var(--verbo-post); }
+.verbo-put { background: var(--verbo-put); }
+.verbo-delete { background: var(--verbo-delete); }
+
+.req-url {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.req-status {
+    flex: none;
+    font-weight: 600;
+    color: var(--verbo-get);
+}
+
+.req-falha {
+    color: var(--verbo-delete);
+}
+
+.req-tempo {
+    flex: none;
+    color: #a9c4c4;
+}
+
+.req-corpo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    padding-top: 10px;
+}
+
+.req-corpo p {
+    margin: 0 0 4px;
+    font-weight: 600;
+}
+
+.req-corpo pre {
+    max-height: 200px;
+    margin: 0;
+    padding: 10px;
+    overflow: auto;
+
+    font-size: 0.8125rem;
+    color: #e7f2f0;
+
+    background: #072a33;
+    border-radius: 4px;
 }
 
 
