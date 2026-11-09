@@ -237,10 +237,11 @@ async function atualizar() {
         return;
     }
 
+    // Campo vazio vai como null para o backend manter o valor atual
     const filme = {
-        titulo: titulo,
-        diretor: diretor,
-        genero: genero,
+        titulo: titulo || null,
+        diretor: diretor || null,
+        genero: genero || null,
         anoLancamento: anoLancamento
             ? Number(anoLancamento)
             : null

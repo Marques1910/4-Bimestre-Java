@@ -18,7 +18,7 @@ public class FilmeService {
     }
 
     public Filme salvarFilme(Filme filme) {
-        return filmeRepository.save(filme);
+        return filmeRepository.saveAndFlush(filme);
     }
 
     public List<Filme> listarFilmes() {
@@ -35,16 +35,20 @@ public class FilmeService {
                 );
     }
 
-    public Filme atualizarFilme(Long id, Filme filmeAtualizado) {
+    public Filme atualizarFilme(Long id, Filme filme) {
 
-        Filme filme = buscarFilmePorId(id);
+        Filme filmeEntity = buscarFilmePorId(id);
 
-        filme.setTitulo(filmeAtualizado.getTitulo());
-        filme.setDiretor(filmeAtualizado.getDiretor());
-        filme.setGenero(filmeAtualizado.getGenero());
-        filme.setAnoLancamento(filmeAtualizado.getAnoLancamento());
+        // Campo não enviado (null) mantém o valor já gravado no banco
+        Filme filmeAtualizado = Filme.builder()
+                .id(filmeEntity.getId())
+                .titulo(filme.getTitulo() != null ? filme.getTitulo() : filmeEntity.getTitulo())
+                .diretor(filme.getDiretor() != null ? filme.getDiretor() : filmeEntity.getDiretor())
+                .genero(filme.getGenero() != null ? filme.getGenero() : filmeEntity.getGenero())
+                .anoLancamento(filme.getAnoLancamento() != null ? filme.getAnoLancamento() : filmeEntity.getAnoLancamento())
+                .build();
 
-        return filmeRepository.save(filme);
+        return filmeRepository.saveAndFlush(filmeAtualizado);
     }
 
     public void deletarFilme(Long id) {
